@@ -47,6 +47,12 @@ def ReLU(z): return T.maximum(0.0, z)
 from theano.tensor.nnet import sigmoid
 from theano.tensor import tanh
 
+#import wandb to monitor resource consumption
+wandb.init(project="my-project")
+
+#set hyperparameters for wandb
+wandb.config.dropout = 0.2
+wandb.config.hidden_layer_size = 128
 
 #### Constants
 GPU = True
@@ -156,6 +162,8 @@ class Network(object):
         # Do the actual training
         best_validation_accuracy = 0.0
         for epoch in range(epochs):
+            loss = 0
+            wandb.log({'epoch': epoch, 'loss': loss})
             for minibatch_index in range(num_training_batches):
                 iteration = num_training_batches*epoch+minibatch_index
                 if iteration % 1000 == 0:
@@ -179,6 +187,8 @@ class Network(object):
         print("Best validation accuracy of {0:.2%} obtained at iteration {1}".format(
             best_validation_accuracy, best_iteration))
         print("Corresponding test accuracy of {0:.2%}".format(test_accuracy))
+        wandb.save("mymodel.h5")
+
 
 #### Define layer types
 
